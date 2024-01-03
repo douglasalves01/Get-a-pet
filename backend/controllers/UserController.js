@@ -1,3 +1,4 @@
+import { createUserToken } from "../helpers/create-user-token.js";
 import { User } from "../models/User.js";
 import bcrypt from "bcrypt";
 export class UserController {
@@ -54,7 +55,7 @@ export class UserController {
     });
     try {
       const newUser = await user.save();
-      console.log("usuario criado");
+      await createUserToken(newUser, req, res);
     } catch (error) {
       res.status(500).json({ message: error });
     }
