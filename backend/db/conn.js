@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
 
-export async function main() {
-  await mongoose.connect("mongodb://localhost:27017/getapet");
-  console.log("conectado ao mongoose");
+export async function connDB() {
+  try {
+    await mongoose.connect(`mongodb://127.0.0.1:27017/getapet`);
+    console.log("Conectado ao mongoose");
+  } catch (error) {
+    console.error("Erro ao conectar:", error);
+  }
 }
-
-main.catch((err) => console.log(err));

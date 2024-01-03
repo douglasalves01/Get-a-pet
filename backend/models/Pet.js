@@ -1,36 +1,34 @@
 import mongoose from "mongoose";
 import { main } from "../db/conn";
 
-export const Pet = mongoose.model(
-  "Pet",
-  new main(
-    {
-      name: {
-        type: String,
-        required: true,
-      },
-      age: {
-        type: Number,
-        required: true,
-      },
-      weight: {
-        type: Number,
-        required: true,
-      },
-      color: {
-        type: String,
-        required: true,
-      },
-      images: {
-        type: Array,
-        required: true,
-      },
-      available: {
-        type: Boolean,
-      },
-      user: Object,
-      adopter: Object,
+const petSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
     },
-    { timestamps: true }
-  )
+    age: {
+      type: Number,
+      required: true,
+    },
+    weight: {
+      type: Number,
+      required: true,
+    },
+    color: {
+      type: String,
+      required: true,
+    },
+    images: {
+      type: Array,
+      required: true,
+    },
+    available: {
+      type: Boolean,
+    },
+    user: Object,
+    adopter: Object,
+  },
+  { timestamps: true }
 );
+export const Pet = mongoose.model("Pet", petSchema);
