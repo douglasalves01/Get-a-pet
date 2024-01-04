@@ -13,3 +13,6 @@ petRouter.post(
 );
 petRouter.get("/", PetController.getAll);
 petRouter.get("/mypets", checkToken, PetController.getAllUserPets);
+petRouter.get("/myadoptions", checkToken, PetController.getAllUserAdoptions);
+petRouter.get("/:id", PetController.getPetById);
+petRouter.delete("/:id", checkToken, PetController.removePetById);
