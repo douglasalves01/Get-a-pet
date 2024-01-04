@@ -120,6 +120,9 @@ export class UserController {
     const id = req.params.id;
     const { name, email, phone, password, confirmPassword } = req.body;
     let image = "";
+    if (req.file) {
+      image = req.file.filename;
+    }
     const token = getToken(req);
     const user = getUserByToken(token);
     if (!user) {
