@@ -4,6 +4,7 @@ import { Pet } from "../models/Pet.js";
 export class PetController {
   static async create(req, res) {
     const { name, age, weight, color } = req.body;
+    const images = req.files;
     const avaliable = true;
 
     //images upload
@@ -33,8 +34,14 @@ export class PetController {
       });
       return;
     }
+    if (images.length === 0) {
+      res.status(422).json({
+        message: "Imagem é obrigatória!",
+      });
+      return;
+    }
     const token = getToken(req);
-    const user = getUserByToken(token);
+    const user = await getUserByToken(token);
     const pet = new Pet({
       name,
       age,
@@ -49,6 +56,9 @@ export class PetController {
         phone: user.iphone,
       },
     });
+    images.map((image) => {
+      pet.images.push(image.filename);
+    });
     try {
       const newPet = await pet.save();
       res.status(201).json({
@@ -58,5 +68,20 @@ export class PetController {
     } catch (error) {
       res.status(500).json({ message: error });
     }
+  }
+  static async getAll(req, res) {
+    const pets = await Pet.find().sort("-createdAt");
+
+    res.status(200).json({
+      pets: pets,
+    });
+  }
+  static async getAllUserPets(req, res) {
+    //get user
+    const token = getToken(req);
+    const user = await getUserByToken(token);
+
+    const pets = await Pet.find({ "user._id": user._id }).sort("-createdAt");
+    res.status(200).json({ pets: pets });
   }
 }
