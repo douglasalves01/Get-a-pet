@@ -1,5 +1,7 @@
 import { createUserToken } from "../helpers/create-user-token.js";
+import { getToken } from "../helpers/get-token.js";
 import { User } from "../models/User.js";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 export class UserController {
   static async register(req, res) {
@@ -59,5 +61,58 @@ export class UserController {
     } catch (error) {
       res.status(500).json({ message: error });
     }
+  }
+  static async login(req, res) {
+    const { email, password } = req.body;
+    if (!email) {
+      res.status(422).json({ message: "O email é obrigatório" });
+      return;
+    }
+    if (!password) {
+      res.status(422).json({ message: "A senha é obrigatório" });
+      return;
+    }
+    //checar se usuário existe
+    const user = await User.findOne({ email: email });
+
+    if (!user) {
+      res.status(422).json({
+        message: "Sem usuário cadastrado para esse email",
+      });
+      return;
+    }
+    //checar senha com senha do banco(hash)
+    const checkPassword = await bcrypt.compare(password, user.password);
+    if (!checkPassword) {
+      res.status(422).json({
+        message: "Senha inválida!",
+      });
+      return;
+    }
+    await createUserToken(user, req, res);
+  }
+  static async checkUser(req, res) {
+    let currentUser;
+    if (req.header.authorization) {
+      const token = getToken(req);
+      const decoded = jwt.verify(token, "nossosecret");
+      currentUser = await User.findById(decoded.id);
+      currentUser.password = undefined;
+    } else {
+      currentUser = null;
+    }
+    res.status(200).send(currentUser);
+  }
+  static async getUserById(req, res) {
+    const id = req.params.id;
+    const user = await User.findById(id).select("-password");
+
+    if (!user) {
+      res.status(422).json({
+        message: "Usuário não encontrado!",
+      });
+      return;
+    }
+    res.status(200).json({ user });
   }
 }
