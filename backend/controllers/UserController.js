@@ -3,6 +3,7 @@ import { getToken } from "../helpers/get-token.js";
 import { User } from "../models/User.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { getUserByToken } from "../helpers/get-user-by-token.js";
 export class UserController {
   static async register(req, res) {
     const { name, email, phone, password, confirmPassword } = req.body;
@@ -114,5 +115,59 @@ export class UserController {
       return;
     }
     res.status(200).json({ user });
+  }
+  static async editUser(req, res) {
+    const id = req.params.id;
+    const { name, email, phone, password, confirmPassword } = req.body;
+    let image = "";
+    const token = getToken(req);
+    const user = getUserByToken(token);
+    if (!user) {
+      res.status(422).json({
+        message: "Usuário não encontrado!",
+      });
+      return;
+    }
+    if (!name) {
+      res.status(422).json({ message: "O nome é obrigatório" });
+      return;
+    }
+    if (!email) {
+      res.status(422).json({ message: "O email é obrigatório" });
+      return;
+    }
+    if (!phone) {
+      res.status(422).json({ message: "O telefone é obrigatório" });
+      return;
+    }
+    if (!password) {
+      res.status(422).json({ message: "A senha é obrigatório" });
+      return;
+    }
+    if (!confirmPassword) {
+      res.status(422).json({ message: "A confirmação de senha é obrigatório" });
+      return;
+    }
+    user.phone = phone;
+    if (password != confirmPassword) {
+      res.status(422).json({
+        message: "A senha e a confrmação de senha precisam ser iguais",
+      });
+      return;
+    } else if (password === confirmPassword && password != null) {
+      const salt = await bcrypt.genSalt(12);
+      const passwordHash = await bcrypt.hash(password, salt);
+      user.password = passwordHash;
+    }
+    try {
+      const updateUser = await User.findOneAndUpdate(
+        { _id: user._id },
+        { $set: user },
+        { new: true }
+      );
+      res.status(200).json({ message: "Usuário atualizado com sucesso!" });
+    } catch (error) {
+      res.status(500).json({ message: error });
+    }
   }
 }
