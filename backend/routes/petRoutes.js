@@ -16,3 +16,9 @@ petRouter.get("/mypets", checkToken, PetController.getAllUserPets);
 petRouter.get("/myadoptions", checkToken, PetController.getAllUserAdoptions);
 petRouter.get("/:id", PetController.getPetById);
 petRouter.delete("/:id", checkToken, PetController.removePetById);
+petRouter.patch(
+  "/:id",
+  checkToken,
+  imageUpload.array("images"),
+  PetController.updatePet
+);
