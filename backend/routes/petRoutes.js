@@ -22,3 +22,4 @@ petRouter.patch(
   imageUpload.array("images"),
   PetController.updatePet
 );
+petRouter.patch("/schedule/:id", checkToken, PetController.schedule);

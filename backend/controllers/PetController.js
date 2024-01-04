@@ -202,4 +202,46 @@ export class PetController {
     await Pet.findByIdAndUpdate(id, updatedData);
     res.status(200).josn({ message: "Pet atualizado com sucesso!" });
   }
+  static async schedule(req, res) {
+    const id = req.params.id;
+
+    if (!isValidObjectId(id)) {
+      res.status(422).json({ message: "ID inválido!" });
+      return;
+    }
+    const pet = await Pet.findOne({ _id: id });
+    if (!pet) {
+      res.status(404).json({ message: "Pet não foi encontrado!" });
+      return;
+    }
+    //verificando se o pet é meu
+    const token = getToken(req);
+    const user = await getUserByToken(token);
+
+    if (pet.user._id.equals(user._id)) {
+      res.status(422).json({
+        message: "Você não pode agendar uma visita com um pet que já é seu!",
+      });
+      return;
+    }
+    if (pet.adopter) {
+      if (pet.adopter._id.equals(user._id)) {
+        res.status(422).json({
+          message: "Você já agendou uma visista para este pet!",
+        });
+        return;
+      }
+    }
+    // add user to pet
+    pet.adopter = {
+      _id: user._id,
+      name: user.name,
+      image: user.image,
+    };
+    await Pet.findByIdAndUpdate(id, pet);
+    res
+      .status(200)
+      .json(200)
+      .json({ message: "A visita foi agendada com sucesso" });
+  }
 }
