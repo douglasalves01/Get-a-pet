@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { connDB } from "./db/conn.js";
 import { userRouter } from "./routes/userRoutes.js";
+import { petRouter } from "./routes/petRoutes.js";
 
 const app = express();
 
@@ -19,7 +20,8 @@ app.use(
 app.use(express.static("public"));
 
 //routes
-app.use("/", userRouter);
+app.use("/users", userRouter);
+app.use("/pet", petRouter);
 
 app.listen(5000, (err) => {
   if (err) {

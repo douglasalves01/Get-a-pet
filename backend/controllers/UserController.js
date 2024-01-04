@@ -119,12 +119,13 @@ export class UserController {
   static async editUser(req, res) {
     const id = req.params.id;
     const { name, email, phone, password, confirmPassword } = req.body;
-    let image = "";
-    if (req.file) {
-      image = req.file.filename;
-    }
     const token = getToken(req);
     const user = getUserByToken(token);
+    let image = "";
+    if (req.file) {
+      user.image = req.file.filename;
+    }
+
     if (!user) {
       res.status(422).json({
         message: "Usuário não encontrado!",

@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { main } from "../db/conn";
 
 const petSchema = new mongoose.Schema(
   {
