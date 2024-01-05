@@ -23,3 +23,4 @@ petRouter.patch(
   PetController.updatePet
 );
 petRouter.patch("/schedule/:id", checkToken, PetController.schedule);
+petRouter.patch("/conclude/:id", checkToken, PetController.concludeAdoption);

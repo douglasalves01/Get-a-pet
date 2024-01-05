@@ -22,7 +22,7 @@ const petSchema = new mongoose.Schema(
       type: Array,
       required: true,
     },
-    available: {
+    avaliable: {
       type: Boolean,
     },
     user: Object,
