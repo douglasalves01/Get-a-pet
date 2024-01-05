@@ -3,7 +3,7 @@ import { User } from "../models/User.js";
 
 export const getUserByToken = async (token) => {
   if (!token) {
-    return resizeBy.status(401).json({ message: "Acesso Negado!" });
+    return res.status(401).json({ message: "Acesso Negado!" });
   }
   const decoded = jwt.verify(token, "nossosecret");
   const userId = decoded.id;
